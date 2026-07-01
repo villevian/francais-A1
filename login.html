@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Вхід — Français A1</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="badge-row" aria-hidden="true">
+        <span class="badge-dot" style="background:var(--pink)"></span>
+        <span class="badge-dot" style="background:var(--amber)"></span>
+        <span class="badge-dot" style="background:var(--green)"></span>
+        <span class="badge-dot" style="background:var(--red)"></span>
+        <span class="badge-dot" style="background:var(--teal)"></span>
+      </div>
+      <h1>Français A1</h1>
+      <p>Введи свій нік, щоб почати або продовжити курс</p>
+      <form id="login-form" autocomplete="off">
+        <input id="nickname-input" type="text" placeholder="Твій нік" maxlength="24" required />
+        <button type="submit" id="login-btn">Почати</button>
+      </form>
+      <div class="login-error" id="login-error"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script>
+    const form = document.getElementById("login-form");
+    const input = document.getElementById("nickname-input");
+    const btn = document.getElementById("login-btn");
+    const errorEl = document.getElementById("login-error");
+
+    // If already logged in, skip straight to the Sommaire
+    const existing = localStorage.getItem("fa1_student");
+    if (existing) window.location.href = "index.html";
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const nickname = input.value.trim();
+      errorEl.textContent = "";
+
+      if (nickname.length < 2) {
+        errorEl.textContent = "Мінімум 2 символи";
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Заходимо…";
+
+      try {
+        // Look for an existing student with this nickname
+        let { data: found, error: findErr } = await sb
+          .from("students")
+          .select("id, nickname")
+          .ilike("nickname", nickname)
+          .maybeSingle();
+
+        if (findErr) throw findErr;
+
+        let student = found;
+
+        if (!student) {
+          const { data: created, error: insertErr } = await sb
+            .from("students")
+            .insert({ nickname })
+            .select("id, nickname")
+            .single();
+          if (insertErr) throw insertErr;
+          student = created;
+        }
+
+        await sb.from("students").update({ last_login_at: new Date().toISOString() }).eq("id", student.id);
+
+        localStorage.setItem("fa1_student", JSON.stringify(student));
+        window.location.href = "index.html";
+      } catch (err) {
+        console.error(err);
+        errorEl.textContent = "Не вдалося увійти. Спробуй ще раз.";
+        btn.disabled = false;
+        btn.textContent = "Почати";
+      }
+    });
+  </script>
+</body>
+</html>

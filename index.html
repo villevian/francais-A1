@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sommaire — Français A1</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="app-header"></div>
+
+  <main class="page">
+    <div class="hero">
+      <h1>Sommaire</h1>
+      <p>Français A1 · обери юніт, щоб побачити прогрес</p>
+      <div class="hero-progress" id="hero-progress"></div>
+    </div>
+
+    <div class="toc-grid" id="toc-grid">
+      <div class="toc-column" id="toc-col-left"></div>
+      <div class="toc-column" id="toc-col-right"></div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sommaire.js"></script>
+</body>
+</html>
