@@ -350,7 +350,7 @@ body.admin nav, body.admin main>.wrap>section:not(#adminView), body.admin .foot,
 <!-- ================= TEXTE ================= -->
 <section id="texte">
   <h2>Texte</h2>
-  <p class="lead">Наведите на слово — перевод слова. 🔊 рядом с предложением — прослушать его.</p>
+  <p class="lead">Текст разбит на словосочетания: наведите на подчёркнутый фрагмент — увидите перевод всего сочетания. 🔊 рядом с предложением — прослушать его.</p>
   <div class="card">
     <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
       <button class="btn ghost" id="playText">🔊 Прослушать весь текст</button>
@@ -358,6 +358,10 @@ body.admin nav, body.admin main>.wrap>section:not(#adminView), body.admin .foot,
     </div>
     <div class="texte" id="texteOut"></div>
     <div class="trans-block" id="transOut"></div>
+  </div>
+  <div class="card">
+    <h3>Collocations из текста — выучить как одно целое</h3>
+    <div class="vlist" id="collOut"></div>
   </div>
   <p class="hint">Фрагмент текста урока (начало).</p>
 </section>
@@ -620,16 +624,31 @@ document.getElementById('copyOwn').onclick=async()=>{
 };
 
 /* ============ TEXTE ============ */
+// Text split into collocations: [fr, ru] = a unit with hover translation, plain string = punctuation/spaces
 const TX=[
- ["Nous sommes jeudi.","Сегодня четверг."],["Il est neuf heures.","Девять часов."],["On sonne.","Звенит звонок."],
- ["Notre professeur, Monsieur Lacombe, arrive.","Приходит наш преподаватель, месье Лакомб."],
- ["Le professeur nous dit bonjour et nous disons bonjour à notre professeur.","Преподаватель здоровается с нами, и мы здороваемся с нашим преподавателем."],
- ["D'abord nous lisons des textes, nous conjuguons des verbes et nous faisons des exercices de grammaire.","Сначала мы читаем тексты, спрягаем глаголы и делаем грамматические упражнения."]
+ {ru:"Сегодня четверг.", c:[["Nous sommes jeudi","сегодня четверг (букв. «мы есть четверг»): так называют день недели"],"."]},
+ {ru:"Девять часов.", c:[["Il est neuf heures","сейчас девять часов: il est … heures — безличный оборот для времени"],"."]},
+ {ru:"Звенит звонок.", c:[["On sonne","звенит звонок (букв. «звонят»)"],"."]},
+ {ru:"Приходит наш преподаватель, месье Лакомб.", c:[["Notre professeur","наш преподаватель"],", ",["Monsieur Lacombe","месье Лакомб"],", ",["arrive","приходит"],"."]},
+ {ru:"Преподаватель здоровается с нами, и мы здороваемся с нашим преподавателем.", c:[["Le professeur","преподаватель"]," ",["nous dit bonjour","здоровается с нами (букв. «говорит нам „здравствуйте“»)"]," et ",["nous disons bonjour à notre professeur","мы здороваемся с нашим преподавателем: dire bonjour à qn — здороваться с кем-л."],"."]},
+ {ru:"Сначала мы читаем тексты, спрягаем глаголы и делаем грамматические упражнения.", c:[["D'abord","сначала"]," ",["nous lisons des textes","мы читаем тексты"],", ",["nous conjuguons des verbes","мы спрягаем глаголы"]," et ",["nous faisons des exercices de grammaire","мы делаем грамматические упражнения: faire des exercices — делать упражнения"],"."]}
 ];
-document.getElementById('texteOut').innerHTML=TX.map(([fr])=>`<span class="sent">${gloss(fr)}<span class="sp">${pbtn(fr,1)}</span></span> `).join('');
-document.getElementById('transOut').innerHTML=TX.map(x=>x[1]).join(' ');
-document.getElementById('playText').onclick=()=>speak(TX.map(x=>x[0]));
+const txFr=t=>t.c.map(x=>Array.isArray(x)?x[0]:x).join('');
+document.getElementById('texteOut').innerHTML=TX.map(t=>`<span class="sent">${t.c.map(x=>Array.isArray(x)?`<span class="w" data-tip="${esc(x[1])}">${x[0]}</span>`:esc(x)).join('')}<span class="sp">${pbtn(txFr(t),1)}</span></span> `).join('');
+document.getElementById('transOut').innerHTML=TX.map(t=>t.ru).join(' ');
+document.getElementById('playText').onclick=()=>speak(TX.map(txFr));
 document.getElementById('toggleTrans').onclick=e=>{ const on=document.getElementById('transOut').classList.toggle('on'); e.target.textContent=on?'Скрыть перевод':'Показать перевод'; };
+const COLL=[
+ ["nous sommes jeudi","сегодня четверг","nous sommes + день недели"],
+ ["il est neuf heures","сейчас девять часов","il est … heure(s) — который час"],
+ ["on sonne","звенит звонок",""],
+ ["dire bonjour à qn","здороваться с кем-л.","Le professeur nous dit bonjour."],
+ ["lire des textes","читать тексты",""],
+ ["conjuguer des verbes","спрягать глаголы",""],
+ ["faire des exercices","делать упражнения","nous faisons des exercices"],
+ ["des exercices de grammaire","грамматические упражнения","de + сущ. = определение: «упражнения (по) грамматике»"]
+];
+document.getElementById('collOut').innerHTML=COLL.map(([fr,ru,g])=>`<div class="vitem">${pbtn(fr.replace(/ qn$/,''),1)}<div><div class="fr">${fr}</div>${g?`<div class="gram">${g}</div>`:''}<div class="ru">${ru}</div></div></div>`).join('');
 
 /* ============ READING ============ */
 // item: [fr, ru]  or  {pair:[[fr,ru],[fr,ru]]}
