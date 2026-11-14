@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Урок 8 · гласный [ɔ̃]</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbf9f5; --card:#ffffff; --ink:#22252b; --muted:#6b7079; --line:#e8e3da;
+  --accent:#3b5bdb; --accent-soft:#eef2ff; --warm:#d9480f; --warm-soft:#fff4e6;
+  --ok:#2b8a3e; --ok-soft:#ebfbee; --bad:#c92a2a; --bad-soft:#fff5f5;
+  --fr:'Lora', Georgia, serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Nunito Sans',system-ui,sans-serif;font-size:16px;line-height:1.55}
+header{background:linear-gradient(135deg,#eef2ff 0%,#fff4e6 100%);border-bottom:1px solid var(--line)}
+.wrap{max-width:980px;margin:0 auto;padding:0 20px}
+.hero{padding:28px 0 18px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.big{font-family:var(--fr);font-size:64px;line-height:1;color:var(--accent);background:#fff;border:1px solid var(--line);border-radius:20px;padding:14px 22px;box-shadow:0 4px 14px rgba(59,91,219,.08)}
+.hero h1{margin:0;font-size:26px;font-weight:800}
+.hero p{margin:4px 0 0;color:var(--muted)}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-bottom:14px}
+.seg{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px}
+.seg button{border:0;background:transparent;padding:6px 12px;border-radius:999px;font:inherit;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer}
+.seg button.on{background:var(--accent);color:#fff}
+.hint{font-size:13px;color:var(--muted)}
+nav{position:sticky;top:0;z-index:20;background:rgba(251,249,245,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:4px;overflow-x:auto;padding-top:8px;padding-bottom:8px}
+nav a{white-space:nowrap;text-decoration:none;color:var(--muted);font-weight:700;font-size:14px;padding:8px 14px;border-radius:10px}
+nav a.on{background:var(--accent-soft);color:var(--accent)}
+nav a .tag{font-size:11px;background:var(--warm);color:#fff;border-radius:6px;padding:1px 6px;margin-left:6px}
+main{padding:24px 0 60px}
+section{display:none}
+section.on{display:block}
+h2{font-size:22px;margin:0 0 6px}
+.lead{color:var(--muted);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-bottom:16px}
+.card h3{margin:0 0 10px;font-size:17px}
+.fr{font-family:var(--fr)}
+.ipa{font-family:'Lora',serif;color:var(--accent)}
+/* play button */
+.play{flex:none;width:30px;height:30px;border-radius:50%;border:1px solid #d5dcf7;background:var(--accent-soft);color:var(--accent);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;transition:.15s}
+.play:hover{background:var(--accent);color:#fff}
+.play svg{width:14px;height:14px}
+.play.sm{width:24px;height:24px}
+.play.sm svg{width:11px;height:11px}
+.play.playing{background:var(--accent);color:#fff}
+/* hover words */
+.w{cursor:help;border-bottom:1px dashed #b9c3ee;transition:background .1s}
+.w:hover,.w.pin{background:#fff3bf;border-bottom-color:#f59f00}
+#tip{position:fixed;z-index:100;max-width:280px;background:#fff;color:var(--ink);border:1px solid #f0d58a;box-shadow:0 8px 24px rgba(0,0,0,.12);border-radius:10px;padding:8px 12px;font-size:14px;line-height:1.4;pointer-events:none;opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s}
+#tip.show{opacity:1;transform:none}
+#tip b{font-family:var(--fr);font-weight:600;color:var(--accent)}
+/* sound section */
+.art{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.art div{background:#fafbff;border:1px solid #e4e9fb;border-radius:12px;padding:12px 14px;font-size:15px}
+.art b{display:block;font-size:13px;color:var(--accent);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.pairs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.pair{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff}
+.pair .side{display:flex;align-items:center;gap:6px;flex:1}
+.pair .dash{color:var(--muted)}
+.pair .word{font-family:var(--fr);font-size:17px}
+.pair .ipa{font-size:13px;display:block}
+table.spell{border-collapse:collapse;width:100%;font-size:15px}
+table.spell th,table.spell td{border:1px solid var(--line);padding:8px 12px;text-align:left}
+table.spell th{background:#faf7f1;font-size:13px;color:var(--muted)}
+/* vocab */
+.vtools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.vtools input{flex:1;min-width:200px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;font:inherit;background:#fff}
+.vgroup{margin-bottom:22px}
+.vgroup h3{font-size:15px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:0 0 8px}
+.vlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:8px}
+.vitem{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.vitem .fr{font-size:17px;font-weight:600}
+.vitem .gram{font-size:12px;color:var(--muted);font-style:italic}
+.vitem .ru{font-size:14.5px;color:#41464f;transition:.15s}
+body.hide-ru .vitem .ru,body.hide-ru .ph .ru{filter:blur(5px);cursor:pointer;user-select:none}
+body.hide-ru .vitem .ru.show,body.hide-ru .ph .ru.show{filter:none}
+/* phrases */
+.ph{display:flex;gap:14px;align-items:flex-start}
+.ph .num{flex:none;width:28px;height:28px;border-radius:8px;background:var(--warm-soft);color:var(--warm);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px}
+.ph .body{flex:1;min-width:0}
+.ph .line{display:flex;gap:10px;align-items:flex-start}
+.ph .frtxt{font-family:var(--fr);font-size:19px;line-height:1.6;flex:1}
+.ph .ru{color:#41464f;margin:4px 0 0;font-size:15px}
+details.parse{margin-top:8px}
+details.parse summary{cursor:pointer;color:var(--accent);font-weight:700;font-size:14px;list-style:none}
+details.parse summary::-webkit-details-marker{display:none}
+details.parse summary::before{content:'▸ ';}
+details.parse[open] summary::before{content:'▾ ';}
+details.parse ul{margin:8px 0 0;padding-left:18px;font-size:14.5px}
+details.parse li{margin-bottom:4px}
+details.parse code{font-family:var(--fr);background:#f4f1ea;padding:1px 6px;border-radius:5px;font-size:14.5px}
+.nas{display:inline-block;font-size:12.5px;background:var(--accent-soft);color:var(--accent);border-radius:6px;padding:1px 8px;margin-top:6px;font-weight:700}
+/* homework */
+.hw-badge{display:inline-block;background:var(--warm);color:#fff;border-radius:8px;padding:2px 10px;font-size:13px;font-weight:800;margin-bottom:10px}
+.idioms{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.idiom{border:2px solid #ffd8a8;background:var(--warm-soft);border-radius:14px;padding:14px 16px}
+.idiom .top{display:flex;align-items:center;gap:10px}
+.idiom .fr{font-size:22px;font-weight:600}
+.idiom .ru{font-weight:700;margin:2px 0 8px}
+.idiom ul{margin:0;padding-left:18px;font-size:14.5px}
+.idiom li .fr{font-size:15.5px;font-weight:500}
+.ex{margin:10px 0}
+.ex .q{font-family:var(--fr);font-size:18px;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.ex input{font-family:var(--fr);font-size:17px;border:none;border-bottom:2px solid #c5cce8;background:#f8f9ff;padding:2px 8px;width:150px;border-radius:6px 6px 0 0;outline:none}
+.ex input:focus{border-bottom-color:var(--accent)}
+.ex input.ok{border-bottom-color:var(--ok);background:var(--ok-soft)}
+.ex input.bad{border-bottom-color:var(--bad);background:var(--bad-soft)}
+.btn{border:1px solid var(--accent);background:var(--accent);color:#fff;font:inherit;font-weight:700;font-size:14px;border-radius:10px;padding:8px 16px;cursor:pointer}
+.btn.ghost{background:#fff;color:var(--accent)}
+.btn:hover{filter:brightness(1.05)}
+.score{margin-left:10px;font-weight:700}
+.tr{border-top:1px solid var(--line);padding:10px 0}
+.tr:first-of-type{border-top:0}
+.tr .ruq{font-weight:600}
+.tr .ans{display:none;align-items:center;gap:8px;font-family:var(--fr);font-size:17px;color:var(--ok);margin-top:4px}
+.tr.open .ans{display:flex}
+.tr .reveal{font-size:13px;padding:4px 10px;margin-top:6px}
+textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-family:var(--fr);font-size:16px;background:#fff;resize:vertical}
+/* text */
+.texte{font-family:var(--fr);font-size:20px;line-height:1.9}
+.sent{border-radius:6px;padding:1px 2px;transition:background .15s}
+.sent:hover{background:#f1f3ff}
+.sent .sp{vertical-align:middle;margin:0 2px}
+.trans-block{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);color:#41464f;font-size:15px;display:none}
+.trans-block.on{display:block}
+/* reading */
+.rline{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:14px}
+.rhead{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.rnum{width:30px;height:30px;border-radius:9px;background:var(--accent);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}
+.rule{flex:1;min-width:220px;font-size:14.5px;color:#41464f;background:#f8f9ff;border-left:3px solid var(--accent);padding:6px 10px;border-radius:0 8px 8px 0}
+.rule .ipa{font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:#fdfcf9;border:1px solid var(--line);border-radius:10px;padding:4px 6px 4px 10px}
+.chip .w{font-family:var(--fr);font-size:17px;border-bottom:none}
+.chip:hover{border-color:#f0d58a;background:#fffbea}
+.chip .arrow{color:var(--muted);margin:0 2px}
+.chip.pairchip{padding-left:6px}
+.chip.pairchip .w{padding:0 2px}
+.lineplay{font-size:13px;padding:5px 12px}
+.foot{font-size:13px;color:var(--muted);margin-top:24px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#fff;border:1px solid var(--line);box-shadow:0 8px 24px rgba(0,0,0,.12);border-radius:12px;padding:10px 16px;font-size:14px;display:none;z-index:200}
+/* profiles & sync */
+#login{position:fixed;inset:0;z-index:300;background:linear-gradient(135deg,#eef2ff 0%,#fff4e6 100%);display:flex;align-items:center;justify-content:center;padding:20px}
+#login.hidden{display:none}
+.lcard{background:#fff;border:1px solid var(--line);border-radius:22px;padding:30px;max-width:620px;width:100%;box-shadow:0 18px 50px rgba(28,39,65,.1);text-align:center}
+.lcard h1{margin:6px 0 4px;font-size:26px}
+.profiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:20px}
+.prof{border:1px solid var(--line);background:#fdfcf9;border-radius:16px;padding:18px 12px;cursor:pointer;font:inherit;display:flex;flex-direction:column;align-items:center;gap:4px;transition:.15s}
+.prof:hover{border-color:var(--accent);background:var(--accent-soft)}
+.prof .ic{font-size:30px}.prof b{font-size:17px}.prof span{font-size:12.5px;color:var(--muted)}
+.userbar{display:flex;align-items:center;gap:8px;margin-left:auto}
+.pill{background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:700}
+.sync{font-size:12.5px;color:var(--muted)}
+.sync.ok{color:var(--ok)}.sync.err{color:var(--bad)}
+.tr textarea.ta{min-height:44px;margin-top:6px;font-size:16px}
+.done-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:6px}
+.check{display:inline-flex;align-items:center;gap:8px;font-weight:700;cursor:pointer;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.check input{width:20px;height:20px;accent-color:var(--ok)}
+.check.on{background:var(--ok-soft);border-color:#b2f2bb;color:var(--ok)}
+#adminView{display:none}
+body.admin #adminView{display:block}
+body.admin nav, body.admin main>.wrap>section:not(#adminView), body.admin .foot, body.admin .toolbar .seg, body.admin .toolbar .hint{display:none}
+.stu{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-bottom:16px}
+.stu h3{margin:0 0 4px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.stu .meta{font-size:13px;color:var(--muted);margin-bottom:10px}
+.stu table{width:100%;border-collapse:collapse;font-size:14.5px}
+.stu td{border-top:1px solid var(--line);padding:6px 8px;vertical-align:top}
+.stu td:first-child{color:var(--muted);width:40%}
+.stu td.fr{font-size:15.5px}
+.badge{font-size:12px;border-radius:6px;padding:2px 8px;font-weight:800}
+.badge.yes{background:var(--ok-soft);color:var(--ok)}.badge.no{background:#f1f3f5;color:var(--muted)}
+.okc{color:var(--ok)}.badc{color:var(--bad)}
+@media (max-width:600px){.big{font-size:44px;padding:10px 16px}.hero h1{font-size:21px}.ph .frtxt{font-size:17px}.texte{font-size:18px}}
+</style>
+</head>
+<body>
+<div id="login">
+  <div class="lcard">
+    <div class="hint" style="text-transform:uppercase;letter-spacing:.08em;font-weight:800">Français · урок 8</div>
+    <h1>Гласный [ɔ̃]</h1>
+    <p class="hint">Выберите профиль. Ответы домашки сохраняются в базе — их видно с любого устройства.</p>
+    <div class="profiles">
+      <button class="prof" data-u="gigi"><span class="ic">👩🏻‍🎓</span><b>Gigi</b><span>Профиль студента</span></button>
+      <button class="prof" data-u="vale"><span class="ic">👩🏼‍🎓</span><b>Vale</b><span>Профиль студента</span></button>
+      <button class="prof" data-u="admin"><span class="ic">📊</span><b>Учитель</b><span>Ответы обеих студенток</span></button>
+    </div>
+  </div>
+</div>
+<header>
+  <div class="wrap">
+    <div class="hero">
+      <div class="big">[ɔ̃]</div>
+      <div>
+        <h1>Гласный [ɔ̃] — носовой «он»</h1>
+        <p>Звук · словарик · фразы · домашка · текст · упражнения в чтении</p>
+      </div>
+    </div>
+    <div class="toolbar">
+      <span class="hint">Скорость озвучки:</span>
+      <div class="seg" id="speed">
+        <button data-r="0.65">Медленно</button>
+        <button data-r="0.85" class="on">Нормально</button>
+        <button data-r="1">Быстро</button>
+      </div>
+      <span class="hint">🔊 — прослушать · наведите на слово — перевод</span>
+      <div class="userbar"><span class="sync" id="syncSt"></span><span class="pill" id="userPill"></span><button class="btn ghost" id="switchUser" style="padding:5px 12px;font-size:13px">Сменить профиль</button></div>
+    </div>
+  </div>
+</header>
+
+<nav><div class="wrap" id="tabs">
+  <a href="#sound" data-t="sound">Звук [ɔ̃]</a>
+  <a href="#vocab" data-t="vocab">Словарик</a>
+  <a href="#phrases" data-t="phrases">Фразы: разбор</a>
+  <a href="#homework" data-t="homework">Домашка<span class="tag">ДЗ</span></a>
+  <a href="#texte" data-t="texte">Texte</a>
+  <a href="#reading" data-t="reading">Упражнения в чтении</a>
+</div></nav>
+
+<main><div class="wrap">
+
+<!-- ================= SOUND ================= -->
+<section id="sound">
+  <h2>Звук [ɔ̃]</h2>
+  <p class="lead">Носовой гласный: что-то среднее между [ɔ] и [o:], воздух частично уходит через нос.</p>
+  <div class="card">
+    <h3>Артикуляция</h3>
+    <div class="art">
+      <div><b>Язык</b>Кончик не касается зубов, язык оттянут назад сильнее, чем для [ɔ]; спинка лежит плоско.</div>
+      <div><b>Губы</b>Округлены сильнее, чем для [ɔ], но меньше, чем для [o].</div>
+      <div><b>Нёбная занавеска</b>Опущена — поэтому звук получает носовой тембр.</div>
+      <div><b>Долгота</b>Исторически долгий; перед произносимой согласной в конце слова звучит долго: <span class="fr">bombe</span> [bɔ̃:b].</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Написание</h3>
+    <table class="spell">
+      <tr><th>Звук</th><th>Написание</th><th>Примеры</th></tr>
+      <tr><td class="ipa">[ɔ̃]</td><td class="fr"><b>on</b> — перед согласной (кроме n) и в конце слова<br><b>om</b> — перед b, p и в конце слова</td><td id="spellEx"></td></tr>
+    </table>
+    <p class="hint" style="margin:10px 0 0">⚠️ Если после on/om идёт гласная или вторая n/m — носового звука нет: <span class="fr">bonne</span> [bɔn], <span class="fr">pomme</span> [pɔm].</p>
+  </div>
+
+  <div class="card">
+    <h3>Фонетические упражнения: долгий [ɔ̃:] — краткий [ɔ̃]</h3>
+    <p class="hint" style="margin:-4px 0 12px">Слушайте пары: перед произносимой согласной звук тянется дольше.</p>
+    <div class="pairs" id="pairsLong"></div>
+  </div>
+  <div class="card">
+    <h3>[ɔ̃] — [ɔ]: носовой и неносовой</h3>
+    <p class="hint" style="margin:-4px 0 12px">Слева — носовой звук, справа — чистый [ɔ] + согласная [n] или [m].</p>
+    <div class="pairs" id="pairsNasal"></div>
+  </div>
+</section>
+
+<!-- ================= VOCAB ================= -->
+<section id="vocab">
+  <h2>Словарик урока</h2>
+  <p class="lead">Слова к фразам и к тексту. Включите «Скрыть перевод», чтобы проверить себя — нажмите на размытый перевод, чтобы открыть.</p>
+  <div class="vtools">
+    <input id="vsearch" type="search" placeholder="Поиск: по-французски или по-русски…">
+    <button class="btn ghost" id="toggleRu">Скрыть перевод</button>
+  </div>
+  <div id="vocabOut"></div>
+</section>
+
+<!-- ================= PHRASES ================= -->
+<section id="phrases">
+  <h2>Phrases — разбор фраз</h2>
+  <p class="lead">Наведите на слово — увидите перевод. Нажмите «Разбор», чтобы посмотреть грамматику.</p>
+  <div style="margin-bottom:14px;display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn ghost" id="playAllPh">🔊 Прослушать все фразы</button>
+    <button class="btn ghost" id="toggleRu2">Скрыть перевод</button>
+  </div>
+  <div id="phOut"></div>
+</section>
+
+<!-- ================= HOMEWORK ================= -->
+<section id="homework">
+  <span class="hw-badge">ДОМАШНЕЕ ЗАДАНИЕ</span>
+  <h2>Устойчивые выражения</h2>
+  <p class="lead">Выучите два выражения из урока и выполните задания ниже.</p>
+
+  <div class="idioms">
+    <div class="idiom">
+      <div class="top"><span class="fr">à la maison</span><button class="play" data-say="à la maison"></button></div>
+      <div class="ru">дома · домой</div>
+      <ul>
+        <li><span class="fr">Ces garçons vont à la maison.</span> — Эти мальчики идут домой. <button class="play sm" data-say="Ces garçons vont à la maison."></button></li>
+        <li><span class="fr">Léon est à la maison.</span> — Леон дома. <button class="play sm" data-say="Léon est à la maison."></button></li>
+      </ul>
+      <p class="hint" style="margin:8px 0 0">Одно выражение отвечает и на «где?», и на «куда?».</p>
+    </div>
+    <div class="idiom">
+      <div class="top"><span class="fr">quelle heure ?</span><button class="play" data-say="quelle heure ?"></button></div>
+      <div class="ru">в котором часу?</div>
+      <ul>
+        <li><span class="fr">À quelle heure finit la récréation ?</span> — В котором часу заканчивается перемена? <button class="play sm" data-say="À quelle heure finit la récréation ?"></button></li>
+        <li><span class="fr">— À onze heures.</span> — В одиннадцать часов. <button class="play sm" data-say="À onze heures."></button></li>
+      </ul>
+      <p class="hint" style="margin:8px 0 0"><span class="fr">heure</span> — женского рода, поэтому <span class="fr">quelle</span> (не quel). В вопросе «во сколько?» нужен предлог <span class="fr">à</span>.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <h3>Задание 1. Вставьте пропущенное</h3>
+    <div id="gaps"></div>
+    <div style="margin-top:12px"><button class="btn" id="checkGaps">Проверить</button><span class="score" id="gapScore"></span></div>
+  </div>
+
+  <div class="card">
+    <h3>Задание 2. Переведите на французский</h3>
+    <p class="hint" style="margin:-4px 0 6px">Сначала скажите или запишите сами, потом откройте ответ.</p>
+    <div id="trOut"></div>
+  </div>
+
+  <div class="card">
+    <h3>Задание 3. Свои предложения</h3>
+    <p class="hint" style="margin:-4px 0 10px">Составьте 3 предложения: одно с <span class="fr">à la maison</span>, одно с <span class="fr">à quelle heure</span> и одно — вопрос с ответом. Используйте слова из словарика.</p>
+    <textarea id="own" data-k="own" placeholder="1. …&#10;2. …&#10;3. …"></textarea>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn ghost" id="speakOwn">🔊 Прослушать</button>
+      <button class="btn ghost" id="copyOwn">Скопировать текст</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Сдать домашку</h3>
+    <div class="done-row">
+      <label class="check" id="doneLbl"><input type="checkbox" id="doneBox"> Домашка выполнена</label>
+      <span class="hint">Ответы сохраняются автоматически во время ввода. Галочка показывает учителю, что всё готово.</span>
+    </div>
+  </div>
+</section>
+
+<section id="adminView" class="on">
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+    <h2 style="margin:0">Кабинет учителя · ответы на домашку</h2>
+    <button class="btn ghost" id="refreshAdmin" style="margin-left:auto">Обновить</button>
+  </div>
+  <div id="adminOut"><p class="hint">Загружаю…</p></div>
+</section>
+
+<!-- ================= TEXTE ================= -->
+<section id="texte">
+  <h2>Texte</h2>
+  <p class="lead">Наведите на слово — перевод слова. 🔊 рядом с предложением — прослушать его.</p>
+  <div class="card">
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+      <button class="btn ghost" id="playText">🔊 Прослушать весь текст</button>
+      <button class="btn ghost" id="toggleTrans">Показать перевод</button>
+    </div>
+    <div class="texte" id="texteOut"></div>
+    <div class="trans-block" id="transOut"></div>
+  </div>
+  <p class="hint">Фрагмент текста урока (начало).</p>
+</section>
+
+<!-- ================= READING ================= -->
+<section id="reading">
+  <h2>Упражнения в чтении</h2>
+  <p class="lead">🔊 у каждого слова — прослушать. Наведите курсор на слово или фразу — появится перевод. Над каждой строкой — правило чтения.</p>
+  <div id="readOut"></div>
+</section>
+
+<p class="foot">Озвучка — встроенный французский голос браузера. Если звука нет, проверьте, что в системе установлен французский голос (лучше всего работает в Chrome и Safari).</p>
+</div></main>
+
+<div id="tip"></div>
+<div id="toast"></div>
+
+<script>
+/* ============ SPEECH ============ */
+let RATE = 0.85, frVoice = null;
+const ICON = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>';
+function pickVoice(){
+  if(!('speechSynthesis' in window)) return;
+  const vs = speechSynthesis.getVoices().filter(v => /^fr/i.test(v.lang));
+  frVoice = vs.find(v => /fr[-_]FR/i.test(v.lang) && /google|amélie|amelie|thomas|audrey|marie|premium|enhanced/i.test(v.name))
+         || vs.find(v => /fr[-_]FR/i.test(v.lang)) || vs[0] || null;
+}
+if('speechSynthesis' in window){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; clearTimeout(t._h); t._h=setTimeout(()=>t.style.display='none',3200); }
+function speak(text, btn){
+  if(!('speechSynthesis' in window)){ toast('Ваш браузер не поддерживает озвучку'); return; }
+  speechSynthesis.cancel();
+  const parts = Array.isArray(text) ? text : [text];
+  document.querySelectorAll('.play.playing').forEach(b=>b.classList.remove('playing'));
+  if(btn) btn.classList.add('playing');
+  parts.forEach((p,i)=>{
+    const u = new SpeechSynthesisUtterance(p);
+    u.lang = 'fr-FR'; if(frVoice) u.voice = frVoice; u.rate = RATE;
+    if(i===parts.length-1) u.onend = u.onerror = ()=>{ if(btn) btn.classList.remove('playing'); };
+    speechSynthesis.speak(u);
+  });
+  if(!frVoice && !speak._warned){ speak._warned=true; setTimeout(()=>{ if(!frVoice) toast('Французский голос не найден — озвучка может звучать с акцентом'); },600); }
+}
+document.getElementById('speed').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  RATE=parseFloat(b.dataset.r);
+  document.querySelectorAll('#speed button').forEach(x=>x.classList.toggle('on',x===b));
+});
+function pbtn(say, sm){ return `<button class="play${sm?' sm':''}" data-say="${esc(say)}" aria-label="Прослушать">${ICON}</button>`; }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.play'); if(b && b.dataset.say!==undefined){ speak(b.dataset.say,b); }
+});
+document.querySelectorAll('.play').forEach(b=>{ if(!b.innerHTML.trim()) b.innerHTML=ICON; });
+
+/* ============ TOOLTIP ============ */
+const tip=document.getElementById('tip'); let pinned=null;
+function showTip(el){
+  const fr = el.dataset.fr || el.textContent;
+  tip.innerHTML = `<b>${esc(fr)}</b><br>${el.dataset.tip}`;
+  tip.classList.add('show');
+  const r=el.getBoundingClientRect(), tw=tip.offsetWidth, th=tip.offsetHeight;
+  let x=r.left + r.width/2 - tw/2; x=Math.max(8,Math.min(x,window.innerWidth-tw-8));
+  let y=r.top - th - 8; if(y<60) y=r.bottom+8;
+  tip.style.left=x+'px'; tip.style.top=y+'px';
+}
+function hideTip(){ tip.classList.remove('show'); }
+document.addEventListener('mouseover',e=>{ const w=e.target.closest('[data-tip]'); if(w && !pinned) showTip(w); });
+document.addEventListener('mouseout',e=>{ const w=e.target.closest('[data-tip]'); if(w && !pinned) hideTip(); });
+document.addEventListener('click',e=>{
+  const w=e.target.closest('[data-tip]');
+  if(pinned){ pinned.classList.remove('pin'); }
+  if(w && w!==pinned){ pinned=w; w.classList.add('pin'); showTip(w); }
+  else { pinned=null; hideTip(); }
+});
+window.addEventListener('scroll',()=>{ if(pinned){pinned.classList.remove('pin');pinned=null;} hideTip(); },{passive:true});
+
+/* ============ GLOSSARY (for hover in phrases & text) ============ */
+const G = {
+ "sais-tu":"знаешь ли ты? (savoir, вопрос с инверсией)","le":"артикль м.р. ед.ч.","la":"артикль ж.р. ед.ч.","les":"артикль мн.ч.",
+ "nom":"имя, фамилия","de":"предлог: (кого? чего?), из, от","ce":"этот; это","ces":"эти","garçon":"мальчик","garçons":"мальчики",
+ "s'appelle":"зовут (s'appeler — называться)","bernard":"Бернар (имя)","dupont":"Дюпон (фамилия)","vont":"идут, едут (aller, ils)",
+ "à":"в, на, к; à la maison — дома, домой","maison":"дом","nous":"мы; нам, нас","traversons":"переходим (traverser)","pont":"мост",
+ "est":"есть, является (être, il/elle)","assez":"довольно, достаточно","long":"длинный","que":"что?","faites-vous":"делаете ли вы? (faire, инверсия)",
+ "leçon":"урок","lisons":"читаем (lire)","et":"и","écrivons":"пишем (écrire)","léon":"Леон (имя)","compte":"посчитай (compter, повелит. накл.)",
+ "jusqu'à":"до (чего-то)","dix":"десять","s'il":"s'il te plaît / s'il vous plaît — пожалуйста","te":"тебе","plaît":"s'il te plaît — пожалуйста (букв. «если тебе нравится»)",
+ "vous":"вы; вам, вас","simon":"Симон (имя)","prononcez":"произнесите (prononcer, повелит. накл.)","son":"звук; его, её",
+ "quelle":"какая, который (ж.р.); quelle heure? — в котором часу?","heure":"час","heures":"часы (время)","finit":"кончается, заканчивается (finir)",
+ "récréation":"перемена, перерыв","onze":"одиннадцать","monsieur":"месье, господин (on здесь не носовой: [məsjø])","crayon":"карандаш",
+ "n'est":"не является (ne + est)","pas":"не (ne … pas)","bon":"хороший","il":"он","écrit":"пишет (écrire)","mal":"плохо",
+ "est-ce":"это ли? est-ce que — вопросительный оборот","ta":"твоя","montre":"часы (наручные)","non":"нет","ma":"моя","c'est":"это (есть)",
+ "mon":"мой","frère":"брат","sont":"есть, являются (être, ils)","vos":"ваши","photos":"фотографии","ne":"не (ne … pas)","nos":"наши","amis":"друзья",
+ "sommes":"являемся (être, nous); nous sommes jeudi — сегодня четверг","jeudi":"четверг","neuf":"девять","on":"неопределённо-личное местоимение («кто-то», «люди»)",
+ "sonne":"звонит; on sonne — звонят, звонок","notre":"наш","professeur":"преподаватель","lacombe":"Лакомб (фамилия)","arrive":"приходит, прибывает",
+ "dit":"говорит (dire); dit bonjour — здоровается","bonjour":"здравствуйте, добрый день","disons":"говорим (dire)","d'abord":"сначала",
+ "des":"неопределённый артикль мн.ч.","textes":"тексты","conjuguons":"спрягаем (conjuguer)","verbes":"глаголы","faisons":"делаем (faire) [fə-zɔ̃]",
+ "exercices":"упражнения","grammaire":"грамматика"
+};
+function gloss(text){
+  return text.replace(/[A-Za-zÀ-ÿœŒ'’]+(?:-[A-Za-zÀ-ÿœŒ'’]+)*/g, m=>{
+    const k=m.toLowerCase().replace(/’/g,"'");
+    return G[k] ? `<span class="w" data-tip="${esc(G[k])}">${m}</span>` : m;
+  });
+}
+
+/* ============ SOUND DATA ============ */
+document.getElementById('spellEx').innerHTML =
+  `<span class="fr">front</span> ${pbtn('front',1)} &nbsp; <span class="fr">bombe</span> ${pbtn('bombe',1)}`;
+const longPairs=[["bombe","[bɔ̃:b]","bon","[bɔ̃]"],["monde","[mɔ̃:d]","mon","[mɔ̃]"],["tonde","[tɔ̃:d]","ton","[tɔ̃]"],["ronde","[rɔ̃:d]","rond","[rɔ̃]"],
+ ["longue","[lɔ̃:g]","long","[lɔ̃]"],["pompe","[pɔ̃:p]","pont","[pɔ̃]"],["fonte","[fɔ̃:t]","fond","[fɔ̃]"],["songe","[sɔ̃:ʒ]","son","[sɔ̃]"]];
+const nasalPairs=[["bon","[bɔ̃]","bonne","[bɔn]"],["ton","[tɔ̃]","tonne","[tɔn]"],["son","[sɔ̃]","sonne","[sɔn]"],["don","[dɔ̃]","donne","[dɔn]"],
+ ["long","[lɔ̃]","l'homme","[lɔm]"],["son","[sɔ̃]","somme","[sɔm]"],["pont","[pɔ̃]","pomme","[pɔm]"],["rond","[rɔ̃]","Rome","[rɔm]"]];
+function pairsHTML(arr){ return arr.map(([a,ai,b,bi])=>`<div class="pair">
+  <div class="side">${pbtn(a,1)}<div><span class="word">${a}</span><span class="ipa">${ai}</span></div></div>
+  <span class="dash">—</span>
+  <div class="side">${pbtn(b,1)}<div><span class="word">${b}</span><span class="ipa">${bi}</span></div></div>
+  <button class="play sm" data-say="${a}. ${b}." title="Пара целиком" style="width:auto;border-radius:8px;padding:0 8px;font-size:11px;font-weight:700">пара</button>
+</div>`).join(''); }
+document.getElementById('pairsLong').innerHTML=pairsHTML(longPairs);
+document.getElementById('pairsNasal').innerHTML=pairsHTML(nasalPairs);
+
+/* ============ VOCAB ============ */
+const VOCAB = {
+ "Слова к фразам":[
+  ["tu sais","(savoir, 3e gr.)","ты знаешь"],["vous savez","(savoir, 3e gr.)","вы знаете"],["le nom","","имя, фамилия"],["le garçon","","мальчик"],
+  ["ils vont","(aller, 3e gr.)","они идут, едут"],["une maison","","дом"],["nous","","мы"],["le pont","","мост"],["long, longue","","длинный, -ая"],
+  ["une leçon","","урок"],["nous lisons","(lire, 3e gr.)","мы читаем"],["nous écrivons","(écrire, 3e gr.)","мы пишем"],
+  ["compter qch","[kɔ̃-te]","считать что-л."],["prononcer qch","","произносить что-л."],["le son","","звук"],
+  ["il (elle) finit","(finir, 2e gr.)","он (она) кончается, заканчивается"],["une récréation","","перемена, перерыв"],["onze","","одиннадцать"],
+  ["le crayon","","карандаш"],["bon, bonne","","хороший, -ая"],["mal","наречие","плохо"],["mon","притяжат. прилагательное","мой, свой"],
+  ["ton","притяжат. прилагательное","твой, свой"],["son","притяжат. прилагательное","его, её, свой, своя"],["une montre","","часы"],
+  ["le frère","","брат"],["vos","притяжат. прилагательное","ваши, свои"],["nos","притяжат. прилагательное","наши, свои"],["une photo","","фотография"],
+  ["à la maison","устойчивое выражение","дома, домой"],["quelle heure ?","устойчивое выражение","в котором часу?"]
+ ],
+ "Слова к тексту":[
+  ["nous sommes","1-е лицо мн.ч. глагола être","мы есть, являемся"],["jeudi (m)","[ʒø-di]","четверг"],["on","неопределённо-личное местоимение","—"],
+  ["on sonne","","звонят, звонок"],["d'abord","","сначала"],["nous","","нам, нас"],["bonjour","","добрый день, здравствуйте"],
+  ["nous disons","(dire, 3e gr.)","мы говорим"],["conjuguer qch","","спрягать"],["nous faisons","[fə-zɔ̃] (faire, 3e gr.)","мы делаем"],
+  ["la télévision","","телевидение"],["une émission de télévision","","телепередача"],["les curiosités (f pl)","","достопримечательности"],
+  ["le film","","фильм"],["le magnétophone","","магнитофон"],["le speaker","[lə-spi-kœ:r]","диктор"],["montrer qch","","показывать что-л."],
+  ["poser qch","","задать (вопрос)"],["une question","","вопрос"],["nous répondons","(répondre, 3e gr.)","мы отвечаем"],["les progrès (m pl)","","успехи"]
+ ]
+};
+function sayOf(fr){ return fr.replace(/\(.*?\)/g,'').replace(/\bqch\b/,'').replace(/\s+/g,' ').trim(); }
+function renderVocab(q=''){
+  q=q.trim().toLowerCase();
+  let html='';
+  for(const [grp,items] of Object.entries(VOCAB)){
+    const f=items.filter(([fr,g,ru])=>!q || (fr+' '+ru).toLowerCase().includes(q));
+    if(!f.length) continue;
+    html+=`<div class="vgroup"><h3>${grp} · ${f.length}</h3><div class="vlist">`+
+      f.map(([fr,g,ru])=>`<div class="vitem">${pbtn(sayOf(fr),1)}<div><div class="fr">${fr}</div>${g?`<div class="gram">${g}</div>`:''}<div class="ru">${ru}</div></div></div>`).join('')+
+      `</div></div>`;
+  }
+  document.getElementById('vocabOut').innerHTML = html || '<p class="hint">Ничего не найдено.</p>';
+}
+renderVocab();
+document.getElementById('vsearch').addEventListener('input',e=>renderVocab(e.target.value));
+function toggleRu(){
+  const on=document.body.classList.toggle('hide-ru');
+  ['toggleRu','toggleRu2'].forEach(id=>document.getElementById(id).textContent=on?'Показать перевод':'Скрыть перевод');
+  document.querySelectorAll('.ru.show').forEach(x=>x.classList.remove('show'));
+}
+document.getElementById('toggleRu').onclick=toggleRu;
+document.getElementById('toggleRu2').onclick=toggleRu;
+document.addEventListener('click',e=>{ const r=e.target.closest('.vitem .ru,.ph .ru'); if(r && document.body.classList.contains('hide-ru')) r.classList.toggle('show'); });
+
+/* ============ PHRASES ============ */
+const PH=[
+ {fr:"Sais-tu le nom de ce garçon ? — Ce garçon s'appelle Bernard Dupont.",ru:"Ты знаешь имя этого мальчика? — Этого мальчика зовут Бернар Дюпон.",
+  nas:"nom, garçon, Dupont",
+  n:["<code>Sais-tu…?</code> — вопрос с <b>инверсией</b>: глагол стоит перед местоимением и соединяется с ним дефисом (= <code>Tu sais…?</code>).",
+     "<code>le nom de ce garçon</code> — принадлежность через <code>de</code>: «имя (кого?) этого мальчика».",
+     "<code>ce garçon</code> — указательное прилагательное <code>ce</code> перед сущ. м.р. = «этот».",
+     "<code>s'appelle</code> — возвратный глагол <code>s'appeler</code>: «называться, зваться». <code>Il s'appelle…</code> = «Его зовут…»."]},
+ {fr:"Ces garçons vont à la maison.",ru:"Эти мальчики идут домой.",nas:"garçons, vont",
+  n:["<code>ces</code> — указательное прилагательное во мн.ч. (для обоих родов) = «эти».","<code>vont</code> — форма глагола <code>aller</code> (3 гр.) для <code>ils</code>.",
+     "<code>à la maison</code> — устойчивое выражение «домой / дома» (см. домашку).","Во мн.ч. <code>-s</code> в <code>garçons</code> не читается."]},
+ {fr:"Nous traversons le pont. Ce pont est assez long.",ru:"Мы переходим мост. Этот мост довольно длинный.",nas:"traversons, pont, long",
+  n:["<code>-ons</code> — окончание глагола 1 гр. для <code>nous</code>, читается [ɔ̃]: <code>traverser → nous traversons</code>.",
+     "<code>assez long</code> — <code>assez</code> «довольно» стоит перед прилагательным.","<code>long</code> — в конце слова <code>g</code> не читается: [lɔ̃]; ж.р. <code>longue</code> [lɔ̃:g]."]},
+ {fr:"Que faites-vous à la leçon ? — À la leçon nous lisons et nous écrivons.",ru:"Что вы делаете на уроке? — На уроке мы читаем и пишем.",nas:"leçon, lisons, écrivons",
+  n:["<code>Que…?</code> — «что?», после него инверсия: <code>Que faites-vous ?</code>","<code>faites</code> — <code>faire</code> для <code>vous</code> (неправильная форма, без <code>-ez</code>).",
+     "<code>à la leçon</code> — «на уроке» (предлог <code>à</code>).","<code>lisons</code> (lire), <code>écrivons</code> (écrire) — глаголы 3 гр., но окончание для <code>nous</code> всё равно <code>-ons</code>.",
+     "<code>ç</code> в <code>leçon</code> читается [s]."]},
+ {fr:"Léon, compte jusqu'à dix, s'il te plaît.",ru:"Леон, посчитай до десяти, пожалуйста.",nas:"Léon, compte",
+  n:["<code>compte</code> — повелительное наклонение для <code>tu</code>: у глаголов 1 гр. без <code>-s</code> (<code>tu comptes → compte !</code>).",
+     "<code>compter</code> [kɔ̃te] — буква <code>p</code> не читается.","<code>jusqu'à</code> — «до»; <code>que</code> теряет <code>e</code> перед гласной (элизия).",
+     "<code>s'il te plaît</code> — «пожалуйста», когда обращаемся на «ты»."]},
+ {fr:"Simon, prononcez le son [ɔ̃], s'il vous plaît.",say:"Simon, prononcez le son on, s'il vous plaît.",ru:"Симон, произнесите звук [ɔ̃], пожалуйста.",nas:"Simon, prononcez (2-й слог), son",
+  n:["<code>prononcez</code> — повелительное наклонение для <code>vous</code> (вежливо или ко многим).","<code>s'il vous plaît</code> — «пожалуйста» на «вы».",
+     "В <code>prononcez</code> [prɔnɔ̃se] первое <code>on</code> не носовое (дальше гласная), второе — носовое.","<code>le son</code> — «звук» (сущ.), не путать с <code>son</code> — «его, её»."]},
+ {fr:"Léon, à quelle heure finit la récréation ? — La récréation finit à onze heures, monsieur.",ru:"Леон, в котором часу заканчивается перемена? — Перемена заканчивается в одиннадцать часов, месье.",nas:"Léon, onze",
+  n:["<code>à quelle heure ?</code> — «в котором часу?» (устойчивое выражение).","<code>finit la récréation</code> — после вопросительного слова подлежащее-существительное может стоять после глагола (простая инверсия).",
+     "<code>finit</code> — <code>finir</code> (2 гр.) для <code>il/elle</code>.","<code>à onze heures</code> — со связыванием <code>onze‿heures</code> [ɔ̃zœr]; <code>heures</code> во мн.ч.",
+     "<code>monsieur</code> — исключение: читается [məsjø], <code>on</code> не носовой."]},
+ {fr:"Ce crayon n'est pas bon, il écrit mal.",ru:"Этот карандаш плохой, он плохо пишет.",nas:"crayon, bon",
+  n:["<code>ne … pas</code> — отрицание обрамляет глагол: <code>n'est pas</code> (<code>ne → n'</code> перед гласной).",
+     "<code>bon</code> — прилагательное «хороший» (каким?), <code>mal</code> — наречие «плохо» (как?).","<code>il</code> заменяет <code>le crayon</code> (м.р.).",
+     "<code>crayon</code> [krɛjɔ̃] — <code>y</code> между гласными = [j]."]},
+ {fr:"Est-ce ta montre, Léon ? — Non, ce n'est pas ma montre, c'est la montre de mon frère.",ru:"Это твои часы, Леон? — Нет, это не мои часы, это часы моего брата.",nas:"montre, Léon, non, mon",
+  n:["<code>Est-ce…?</code> — вопрос «Это…?» (инверсия от <code>c'est</code>).","<code>ta / ma</code> — притяжательные для ж.р. (<code>la montre</code>), <code>mon</code> — для м.р. (<code>le frère</code>).",
+     "<code>la montre</code> — ед.ч. по-французски, а по-русски «часы» — мн.ч.!","<code>la montre de mon frère</code> — принадлежность через <code>de</code>."]},
+ {fr:"Est-ce que ce sont vos photos ? — Non, ce ne sont pas nos photos, ce sont les photos de nos amis.",ru:"Это ваши фотографии? — Нет, это не наши фотографии, это фотографии наших друзей.",nas:"sont, non",
+  n:["<code>Est-ce que…?</code> — вопросительный оборот без изменения порядка слов.","<code>c'est</code> → <code>ce sont</code> перед мн.ч.; отрицание: <code>ce ne sont pas</code>.",
+     "<code>vos / nos</code> — притяжательные для мн.ч. («ваши / наши»).","<code>nos‿amis</code> — связывание [nozami]."]}
+];
+document.getElementById('phOut').innerHTML = PH.map((p,i)=>`<div class="card"><div class="ph">
+  <div class="num">${i+1}</div><div class="body">
+   <div class="line"><div class="frtxt">${gloss(p.fr)}</div>${pbtn(p.say||p.fr)}</div>
+   <div class="ru">${p.ru}</div>
+   <span class="nas">[ɔ̃]: ${p.nas}</span>
+   <details class="parse"><summary>Разбор</summary><ul>${p.n.map(x=>`<li>${x}</li>`).join('')}</ul></details>
+  </div></div></div>`).join('');
+document.getElementById('playAllPh').onclick=e=>speak(PH.map(p=>p.say||p.fr),null);
+
+/* ============ HOMEWORK ============ */
+const GAPS=[
+ ["Ces garçons vont à la","maison","."],
+ ["À","quelle","heure finit la récréation ?"],
+ ["À quelle","heure","finit la leçon ?"],
+ ["Les garçons vont","à la maison","à onze heures."],
+ ["Léon est à la","maison",". Il lit."]
+];
+document.getElementById('gaps').innerHTML=GAPS.map(([a,ans,b],i)=>`<div class="ex"><div class="q"><span style="color:var(--muted);font-family:'Nunito Sans';font-size:14px;font-weight:700">${i+1}.</span> ${a} <input data-k="gap${i+1}" data-a="${esc(ans)}" style="width:${Math.max(110,ans.length*13)}px" autocomplete="off" spellcheck="false"> ${b}</div></div>`).join('');
+const norm=s=>s.toLowerCase().replace(/[’']/g,"'").replace(/\s+/g,' ').trim();
+const deacc=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'');
+document.getElementById('checkGaps').onclick=()=>{
+  let ok=0; const ins=[...document.querySelectorAll('#gaps input')];
+  ins.forEach(inp=>{
+    const v=norm(inp.value), a=norm(inp.dataset.a);
+    inp.classList.remove('ok','bad');
+    if(v===a){inp.classList.add('ok');ok++;}
+    else if(deacc(v)===deacc(a)){inp.classList.add('ok');ok++;inp.title='Проверьте акценты: '+inp.dataset.a;}
+    else {inp.classList.add('bad');inp.title='Правильно: '+inp.dataset.a;}
+  });
+  LAST_SCORE=`${ok}/${ins.length}`; scheduleSave();
+  document.getElementById('gapScore').textContent=`${ok} из ${ins.length}`+(ok<ins.length?' · наведите на красное поле — подсказка':' · Très bien !');
+};
+const TR=[
+ ["Мальчики идут домой.","Les garçons vont à la maison."],
+ ["В котором часу заканчивается урок?","À quelle heure finit la leçon ?"],
+ ["Перемена заканчивается в одиннадцать часов.","La récréation finit à onze heures."],
+ ["Леон дома.","Léon est à la maison."],
+ ["В котором часу мальчики идут домой?","À quelle heure est-ce que les garçons vont à la maison ?"]
+];
+document.getElementById('trOut').innerHTML=TR.map(([ru,fr],i)=>`<div class="tr"><div class="ruq">${i+1}. ${ru}</div>
+ <textarea class="ta" data-k="tr${i+1}" placeholder="Ваш перевод…" spellcheck="false"></textarea>
+ <button class="btn ghost reveal">Показать ответ</button>
+ <div class="ans"><span>${fr}</span>${pbtn(fr,1)}</div></div>`).join('');
+document.getElementById('trOut').addEventListener('click',e=>{
+  const b=e.target.closest('.reveal'); if(!b) return;
+  const t=b.closest('.tr'); t.classList.toggle('open'); b.textContent=t.classList.contains('open')?'Скрыть ответ':'Показать ответ';
+});
+document.getElementById('speakOwn').onclick=()=>{ const v=document.getElementById('own').value.trim(); if(v) speak(v.replace(/^\s*\d+[.)]\s*/gm,'')); else toast('Сначала напишите предложения'); };
+document.getElementById('copyOwn').onclick=async()=>{
+  const v=document.getElementById('own').value.trim(); if(!v){toast('Поле пустое');return;}
+  try{ await navigator.clipboard.writeText('ДЗ: à la maison / quelle heure\n'+v); toast('Скопировано — вставьте в чат преподавателю'); }
+  catch(_){ toast('Не удалось скопировать — выделите текст вручную'); }
+};
+
+/* ============ TEXTE ============ */
+const TX=[
+ ["Nous sommes jeudi.","Сегодня четверг."],["Il est neuf heures.","Девять часов."],["On sonne.","Звенит звонок."],
+ ["Notre professeur, Monsieur Lacombe, arrive.","Приходит наш преподаватель, месье Лакомб."],
+ ["Le professeur nous dit bonjour et nous disons bonjour à notre professeur.","Преподаватель здоровается с нами, и мы здороваемся с нашим преподавателем."],
+ ["D'abord nous lisons des textes, nous conjuguons des verbes et nous faisons des exercices de grammaire.","Сначала мы читаем тексты, спрягаем глаголы и делаем грамматические упражнения."]
+];
+document.getElementById('texteOut').innerHTML=TX.map(([fr])=>`<span class="sent">${gloss(fr)}<span class="sp">${pbtn(fr,1)}</span></span> `).join('');
+document.getElementById('transOut').innerHTML=TX.map(x=>x[1]).join(' ');
+document.getElementById('playText').onclick=()=>speak(TX.map(x=>x[0]));
+document.getElementById('toggleTrans').onclick=e=>{ const on=document.getElementById('transOut').classList.toggle('on'); e.target.textContent=on?'Скрыть перевод':'Показать перевод'; };
+
+/* ============ READING ============ */
+// item: [fr, ru]  or  {pair:[[fr,ru],[fr,ru]]}
+const RD=[
+ {rule:'<b>on / om</b> перед согласной и в конце слова → <span class="ipa">[ɔ̃]</span>. Перед <b>b, p</b> пишется <b>om</b>. Конечные согласные обычно не читаются.',
+  w:[["bombe","бомба"],["tombe","могила; падает"],["pompe","насос"],["honte","стыд"],["conte","сказка"],["ronde","хоровод; обход"],["songe","сон, грёза"],
+     ["longue","длинная"],["Londres","Лондон"],["bomber","бомбить"],["songer","мечтать, думать"],["pomper","качать (насосом)"],["longer","идти вдоль"],
+     ["plomber","пломбировать"],["conter","рассказывать"],["long","длинный"],["rond","круглый"],["fond","дно; глубина"],["don","дар"],["bon","хороший"],
+     ["mon","мой"],["ton","твой"],["son","его, её; звук"],["salon","гостиная; салон"],["avion","самолёт"],["Avignon","Авиньон (город)"],["agression","агрессия"]]},
+ {rule:'Окончание <b>-ons</b> (глаголы, <b>nous</b>) → <span class="ipa">[ɔ̃]</span>, <b>s</b> не читается. Перед гласной — связывание: <b>nous‿aimons</b> [nuzɛmɔ̃].',
+  w:[["nous dessinons","мы рисуем"],["nous téléphonons","мы звоним (по телефону)"],["nous trouvons","мы находим"],["nous bavardons","мы болтаем"],
+     ["nous mettons","мы кладём, ставим"],["nous aimons","мы любим"],["nous habitons","мы живём"],["nous étudions","мы изучаем"],["nous écrivons","мы пишем"],
+     ["nous écoutons","мы слушаем"],["nous ouvrons","мы открываем"],["nous apportons","мы приносим"]]},
+ {rule:'<b>mon, ton, son</b> перед гласной или немым <b>h</b> — связывание: <b>mon‿ami</b> [mɔ̃nami], носовой звук сохраняется. Перед словом ж.р. на гласную тоже <b>mon/ton/son</b>: <b>mon étagère</b>.',
+  w:[["mon journal","моя газета; мой дневник"],["ton bureau","твой письменный стол; твой кабинет"],["son professeur","его / её преподаватель"],["ton frère","твой брат"],
+     ["son ami","его / её друг"],["mon étagère","моя полка"],["ton article","твоя статья"],["son opéra","его / её опера"],["ton énergie","твоя энергия"],
+     ["mon échec","моя неудача"],["son accord","его / её согласие"],["ton oreille","твоё ухо"],["son habitude","его / её привычка"],["ton avocat","твой адвокат"]]},
+ {rule:'Если после <b>on/om</b> стоит гласная или вторая <b>n/m</b> — звук <b>не носовой</b>: <span class="ipa">[ɔn], [ɔm]</span>. Сравните: <b>nom</b> [nɔ̃] — <b>nommer</b> [nɔme]. В <b>plomb</b> конечное <b>b</b> не читается.',
+  w:[{pair:[["nom","имя"],["nommer","называть"]]},{pair:[["ton","тон; твой"],["tonner","греметь"]]},{pair:[["pardon","прощение; извините"],["pardonner","прощать"]]},
+     {pair:[["prison","тюрьма"],["prisonnier","заключённый"]]},{pair:[["raison","причина; разум"],["raisonnable","разумный"]]},
+     ["poumon","лёгкое"],["pommier","яблоня"],["plomb","свинец"],["promenade","прогулка"],["monter","подниматься"],["monnaie","мелочь; валюта"]]},
+ {rule:'<b>on</b> — неопределённо-личное местоимение («кто-то, люди»), переводится 3-м л. мн.ч. Перед гласной — связывание: <b>on‿aime</b> [ɔ̃nɛm].',
+  w:[["on sonne","звонят; звенит звонок"],["on donne","дают"],["on téléphone","звонят (по телефону)"],["on prononce","произносят"],["on montre","показывают"],
+     ["on aime","любят"],["on habite","живут"],["on écrit","пишут"],["on étudie","изучают"],["on écoute","слушают"],["on arrive","приходят, прибывают"],["on apporte","приносят"]]},
+ {rule:'<b>y</b> между гласными = <b>i + i</b>: первое <b>i</b> сливается с предыдущей гласной, второе даёт <span class="ipa">[j]</span>: <b>crayon</b> [krɛjɔ̃], <b>payer</b> [peje].',
+  w:[["crayon","карандаш"],["rayon","луч; отдел (магазина)"],["balayer","подметать"],["balayons","подметаем"],["balayeur","дворник"],["payer","платить"],
+     ["payons","платим"],["ayez","имейте (avoir, повелит.)"],["grasseyer","картавить"]]},
+ {rule:'<b>ç</b> (седиль) перед <b>a, o, u</b> читается <span class="ipa">[s]</span>: <b>garçon</b> [garsɔ̃], <b>ça</b> [sa].',
+  w:[["garçon","мальчик"],["leçon","урок"],["maçon","каменщик"],["façon","способ, манера"],["limaçon","улитка"],["ça","это"],["façade","фасад"],
+     ["reçu","квитанция; получил"],["aperçu","обзор; замеченный"]]},
+ {rule:'В сочетаниях <b>mpt</b> и <b>pt</b> в этих словах буква <b>p</b> не читается: <b>compter</b> [kɔ̃te], <b>sculpteur</b> [skyltœr], <b>baptême</b> [batɛm].',
+  w:[["dompter","укрощать"],["dompteur","укротитель"],["domptage","дрессировка"],["compter","считать"],["compteur","счётчик"],["comptable","бухгалтер"],
+     ["sculpteur","скульптор"],["sculpture","скульптура"],["baptiser","крестить"],["baptême","крещение"],["escompter","рассчитывать на; учитывать (вексель)"]]},
+ {rule:'<b>gu</b> перед <b>e, i, y</b> → <span class="ipa">[g]</span>, <b>u</b> не читается: <b>guitare</b> [gitar]. Перед согласной или в конце слога <b>gu</b> = [gy]: <b>figurer</b>, <b>virgule</b>.',
+  w:[["figurer","фигурировать"],["ligue","лига"],["figure","лицо; фигура"],["collègue","коллега"],["rigueur","строгость"],["lugubre","мрачный"],
+     ["léguer","завещать"],["guttural","гортанный"],["muguet","ландыш"],["guider","вести, направлять"],["guitare","гитара"],["virgule","запятая"],
+     ["guetter","подстерегать"],["vigueur","сила, бодрость"],["Gustave","Гюстав (имя)"],["figuier","инжир (дерево)"],["conjuguer","спрягать"]]}
+];
+function chip([fr,ru]){ return `<span class="chip"><span class="w" data-tip="${esc(ru)}">${fr}</span>${pbtn(fr,1)}</span>`; }
+document.getElementById('readOut').innerHTML=RD.map((l,i)=>{
+  const all=[]; l.w.forEach(x=>x.pair?all.push(x.pair[0][0],x.pair[1][0]):all.push(x[0]));
+  return `<div class="rline"><div class="rhead"><div class="rnum">${i+1}</div><div class="rule">${l.rule}</div>
+    <button class="btn ghost lineplay" data-line="${i}">🔊 Вся строка</button></div>
+    <div class="chips">${l.w.map(x=>x.pair
+      ? `<span class="chip pairchip">${pbtn(x.pair[0][0],1)}<span class="w" data-tip="${esc(x.pair[0][1])}">${x.pair[0][0]}</span><span class="arrow">—</span><span class="w" data-tip="${esc(x.pair[1][1])}">${x.pair[1][0]}</span>${pbtn(x.pair[1][0],1)}</span>`
+      : chip(x)).join('')}</div></div>`;
+}).join('');
+document.getElementById('readOut').addEventListener('click',e=>{
+  const b=e.target.closest('.lineplay'); if(!b) return;
+  const l=RD[+b.dataset.line]; const all=[]; l.w.forEach(x=>x.pair?all.push(x.pair[0][0],x.pair[1][0]):all.push(x[0]));
+  speak(all.join(', '));
+});
+
+/* ============ PROFILES & SUPABASE SYNC ============ */
+// Business Partner Supabase project, table french_answers (one row per student + lesson)
+const SB_URL = "https://zuegojpfhgigsvyrnymt.supabase.co";
+const SB_KEY = "sb_publishable__Xn8xRhne9Hp2ckaXu6xCQ_MOe52bng";
+const LESSON = "lesson-8 [ɔ̃]";
+const USERS = { gigi:"Gigi", vale:"Vale" };
+const sb = (window.supabase && window.supabase.createClient) ? window.supabase.createClient(SB_URL, SB_KEY) : null;
+let USER = null, LAST_SCORE = null, saveTimer = null, loading = false;
+const $ = id => document.getElementById(id);
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(_){} }
+function syncSt(t,c=''){ const el=$('syncSt'); el.textContent=t; el.className='sync '+c; }
+
+function collect(){
+  const a={};
+  document.querySelectorAll('#homework [data-k]').forEach(x=>a[x.dataset.k]=x.value);
+  return a;
+}
+function fill(a){
+  document.querySelectorAll('#homework [data-k]').forEach(x=>{ x.value = a && a[x.dataset.k]!=null ? a[x.dataset.k] : ''; x.classList.remove('ok','bad'); });
+  $('gapScore').textContent='';
+}
+function setDone(v){ $('doneBox').checked=!!v; $('doneLbl').classList.toggle('on',!!v); }
+
+async function saveNow(){
+  if(!USER || USER==='admin' || loading) return;
+  const row={ student:USER, lesson:LESSON, answers:collect(), score:LAST_SCORE, submitted:$('doneBox').checked, updated_at:new Date().toISOString() };
+  lsSet('fr8:'+USER, JSON.stringify(row));
+  if(!sb){ syncSt('Сохранено на этом устройстве','err'); return; }
+  syncSt('Сохраняю…');
+  const { error } = await sb.from('french_answers').upsert(row, { onConflict:'student,lesson' });
+  if(error){ console.error(error); syncSt('⚠ Не сохранилось в базе (есть копия на устройстве)','err'); }
+  else syncSt('✓ Сохранено','ok');
+}
+function scheduleSave(){ clearTimeout(saveTimer); syncSt('…'); saveTimer=setTimeout(saveNow,700); }
+document.getElementById('homework').addEventListener('input', e=>{ if(e.target.matches('[data-k]')) scheduleSave(); });
+$('doneBox').addEventListener('change', ()=>{ setDone($('doneBox').checked); saveNow(); });
+
+async function loadStudent(){
+  loading=true; syncSt('Загружаю ответы…');
+  let row=null;
+  if(sb){
+    const { data, error } = await sb.from('french_answers').select('*').eq('student',USER).eq('lesson',LESSON).maybeSingle();
+    if(error) console.error(error); else row=data;
+  }
+  if(!row){ const l=lsGet('fr8:'+USER); if(l){ try{ row=JSON.parse(l); }catch(_){} } }
+  fill(row?row.answers:{}); LAST_SCORE=row?row.score:null; setDone(row&&row.submitted);
+  loading=false;
+  syncSt(row? '✓ Ответы загружены':'', row?'ok':'');
+}
+
+async function renderAdmin(){
+  const out=$('adminOut');
+  if(!sb){ out.innerHTML='<p class="hint">База недоступна — проверьте интернет.</p>'; return; }
+  out.innerHTML='<p class="hint">Загружаю…</p>';
+  const { data, error } = await sb.from('french_answers').select('*').eq('lesson',LESSON);
+  if(error){ out.innerHTML='<p class="hint">Ошибка загрузки: '+esc(error.message)+'</p>'; return; }
+  const by={}; (data||[]).forEach(r=>by[r.student]=r);
+  out.innerHTML=Object.entries(USERS).map(([id,name])=>{
+    const r=by[id];
+    if(!r) return `<div class="stu"><h3>${name} <span class="badge no">ещё не начинала</span></h3></div>`;
+    const a=r.answers||{};
+    const gapRows=GAPS.map(([pre,ans,post],i)=>{ const v=(a['gap'+(i+1)]||'').trim(); const ok=v && deacc(norm(v))===deacc(norm(ans));
+      return `<tr><td>1.${i+1} ${esc(pre)} ___ ${esc(post)}</td><td class="fr">${v?`<span class="${ok?'okc':'badc'}">${esc(v)}</span>`:'—'}${!ok?` <span class="hint">(${esc(ans)})</span>`:''}</td></tr>`; }).join('');
+    const trRows=TR.map(([ru,fr],i)=>`<tr><td>2.${i+1} ${esc(ru)}<br><span class="hint fr">${esc(fr)}</span></td><td class="fr">${esc(a['tr'+(i+1)]||'—')}</td></tr>`).join('');
+    const own=(a.own||'').trim();
+    return `<div class="stu"><h3>${name} <span class="badge ${r.submitted?'yes':'no'}">${r.submitted?'✓ домашка сдана':'в процессе'}</span></h3>
+      <div class="meta">Обновлено: ${new Date(r.updated_at).toLocaleString('ru-RU')}${r.score?' · Задание 1 при проверке: '+esc(r.score):''}</div>
+      <table>${gapRows}${trRows}<tr><td>3. Свои предложения</td><td class="fr" style="white-space:pre-wrap">${own?esc(own):'—'}</td></tr></table></div>`;
+  }).join('');
+}
+$('refreshAdmin').onclick=renderAdmin;
+
+function login(u){
+  USER=u; lsSet('fr8:user',u);
+  $('login').classList.add('hidden');
+  document.body.classList.toggle('admin',u==='admin');
+  $('userPill').textContent = u==='admin' ? '📊 Учитель' : USERS[u];
+  if(u==='admin'){ syncSt(''); renderAdmin(); } else loadStudent();
+}
+document.querySelectorAll('.prof').forEach(b=>b.onclick=()=>login(b.dataset.u));
+$('switchUser').onclick=async()=>{ clearTimeout(saveTimer); await saveNow(); USER=null; try{localStorage.removeItem('fr8:user');}catch(_){} document.body.classList.remove('admin'); $('login').classList.remove('hidden'); };
+{ const u=lsGet('fr8:user'); if(u && (USERS[u]||u==='admin')) login(u); }
+window.addEventListener('beforeunload',()=>{ if(saveTimer){ clearTimeout(saveTimer); saveNow(); } });
+
+/* ============ TABS ============ */
+const TABS=['sound','vocab','phrases','homework','texte','reading'];
+function route(){
+  const h=location.hash.slice(1); const t=TABS.includes(h)?h:'sound';
+  TABS.forEach(id=>document.getElementById(id).classList.toggle('on',id===t));
+  document.querySelectorAll('#tabs a').forEach(a=>a.classList.toggle('on',a.dataset.t===t));
+  hideTip();
+}
+window.addEventListener('hashchange',()=>{route();window.scrollTo({top:0});});
+route();
+</script>
+</body>
+</html>
